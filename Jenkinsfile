@@ -1,45 +1,42 @@
-pipeline {
-    agent any
-     tools {
-        maven 'Maven' 
-        }
-    stages {
+pipeline{
+    agent: any
+    tools {
+        maven 'Maven'
+    }
+    stages{
         stage("Test"){
             steps{
                 // mvn test
                 sh "mvn test"
-                slackSend channel: 'youtubejenkins', message: 'Job Started'
-                
             }
             
         }
         stage("Build"){
             steps{
+                // mvn package
                 sh "mvn package"
-                
             }
             
         }
         stage("Deploy on Test"){
             steps{
-                // deploy on container -> plugin
-                deploy adapters: [tomcat9(credentialsId: 'tomcatserverdetails1', path: '', url: 'http://192.168.0.118:8080')], contextPath: '/app', war: '**/*.war'
-              
+                // Deploy on container - plugin
+                deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://65.0.85.96:8081')], contextPath: '/app', war: '**/*.war'
             }
             
         }
         stage("Deploy on Prod"){
-             input {
-                message "Should we continue?"
-                ok "Yes we Should"
+            input {
+                message "Do you want to deploy on Prod?"
+                ok "Yes, We should"
+            }
+            steps{
+                // // Deploy on container - plugin
+                deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://65.0.85.96:8081')], contextPath: '/app', war: '**/*.war'
             }
             
-            steps{
-                // deploy on container -> plugin
-                deploy adapters: [tomcat9(credentialsId: 'tomcatserverdetails1', path: '', url: 'http://192.168.0.119:8080')], contextPath: '/app', war: '**/*.war'
-
-            }
         }
+        
     }
     post{
         always{
@@ -47,11 +44,9 @@ pipeline {
         }
         success{
             echo "========pipeline executed successfully ========"
-             slackSend channel: 'youtubejenkins', message: 'Success'
         }
         failure{
             echo "========pipeline execution failed========"
-             slackSend channel: 'youtubejenkins', message: 'Job Failed'
         }
     }
 }
