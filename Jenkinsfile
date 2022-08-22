@@ -6,19 +6,14 @@ pipeline{
     stages{
         stage("Test"){
             steps{
-                sh "mvn --version"
+                sh "mvn test"
             }
-            post{
-                always{
-                    echo "========always========"
-                }
-                success{
-                    echo "========A executed successfully========"
-                }
-                failure{
-                    echo "========A execution failed========"
-                }
+        }
+        stage("Build"){
+            steps{
+                sh "mvn package"
             }
+        }    
         }
     }
     post{
