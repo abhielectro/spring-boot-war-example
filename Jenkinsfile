@@ -1,19 +1,39 @@
-pipeline{
+pipeline {
     agent any
-    tools{
+     tools {
         maven 'Maven'
-    }
-    stages{
+        }
+    stages {
         stage("Test"){
             steps{
-                sh "mvn test"
+                // mvn test
+                sh "mvn test" 
             }
+
         }
         stage("Build"){
             steps{
                 sh "mvn package"
             }
-        }    
+
+        }
+        stage("Deploy on Test"){
+            steps{
+                // deploy on container -> plugin
+                deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://65.0.85.96:8081')], contextPath: '/app', war: '**/*.war'
+            }
+
+        }
+        stage("Deploy on Prod"){
+             input {
+                message "Should we continue?"
+                ok "Yes we Should"
+            }
+
+            steps{
+                // deploy on container -> plugin
+                deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://65.0.85.96:8081')], contextPath: '/app', war: '**/*.war'
+            }
         }
     }
     post{
