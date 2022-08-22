@@ -1,42 +1,40 @@
-pipeline{
-    agent: any
-    tools {
+pipeline {
+    agent any
+     tools {
         maven 'Maven'
-    }
-    stages{
+        }
+    stages {
         stage("Test"){
             steps{
                 // mvn test
-                sh "mvn test"
+                sh "mvn test" 
             }
-            
+
         }
         stage("Build"){
             steps{
-                // mvn package
                 sh "mvn package"
             }
-            
+
         }
         stage("Deploy on Test"){
             steps{
-                // Deploy on container - plugin
+                // deploy on container -> plugin
                 deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://65.0.85.96:8081')], contextPath: '/app', war: '**/*.war'
             }
-            
+
         }
         stage("Deploy on Prod"){
-            input {
-                message "Do you want to deploy on Prod?"
-                ok "Yes, We should"
+             input {
+                message "Should we continue?"
+                ok "Yes we Should"
             }
+
             steps{
-                // // Deploy on container - plugin
+                // deploy on container -> plugin
                 deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://65.0.85.96:8081')], contextPath: '/app', war: '**/*.war'
             }
-            
         }
-        
     }
     post{
         always{
@@ -49,4 +47,3 @@ pipeline{
             echo "========pipeline execution failed========"
         }
     }
-}
