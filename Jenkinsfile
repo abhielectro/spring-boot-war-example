@@ -4,9 +4,9 @@ pipeline{
         maven 'Maven'
     }
     stages{
-        stage("A"){
+        stage("Test"){
             steps{
-                echo "========executing A========"
+                sh "mvn --version"
             }
             post{
                 always{
