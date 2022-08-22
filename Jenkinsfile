@@ -26,8 +26,8 @@ pipeline {
         }
         stage("Deploy on Prod"){
              input {
-                message "Should we continue?"
-                ok "Yes we Should"
+                message "Do you want to deploy on Prod?"
+                ok "Yes, We should"
             }
 
             steps{
